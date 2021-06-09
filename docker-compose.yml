@@ -1,0 +1,29 @@
+version: '3'
+
+services:
+  api:
+    container_name: service.auto-save.local
+    restart: always
+    build: api
+    volumes: ['./api:/api']
+    networks:
+      - serviceAutoSaveNetwork
+      - gateway-api
+    expose:
+      - "5000"
+    ports:
+      - "5000:5000"
+  nginx-auto_save:
+    container_name: nginx-auto_save
+    restart: always
+    build: ./nginx
+    networks:
+      - serviceAutoSaveNetwork
+      - gateway-api
+    ports:
+      - "83:80"
+networks:
+  serviceAutoSaveNetwork:
+  gateway-api:
+    external:
+      name: autosavemain_default

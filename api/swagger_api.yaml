@@ -1,0 +1,106 @@
+---
+openapi: 3.0.0
+info:
+  description: Сервис для построения модели предсказания роста КБМ
+  version: 1.0.0
+  title: AutoSaveService
+servers:
+- url: 'http://service.auto-save.local:5000/api/v1'
+tags:
+- name: AutoData
+paths:
+  /KNN/prediction:
+    post:
+      tags:
+        - AutoData
+      description: Модель KNN предсказания роста КБМ.
+      operationId: api.KNN.prediction
+      parameters:
+        - name: age
+          in: query
+          description: Возраст
+          required: false
+          schema:
+            type: number
+            format: int32
+        - name: gender
+          in: query
+          description: Пол
+          required: false
+          schema:
+            type: number
+            format: int32
+        - name: exp
+          in: query
+          description: Стаж вождения
+          required: false
+          schema:
+            type: number
+            format: int32
+        - name: region
+          in: query
+          description: Регион проживания
+          required: false
+          schema:
+            type: string
+        - name: marka
+          in: query
+          description: Марка автомобиля
+          schema:
+            type: string
+        - name: year
+          in: query
+          description: Год выпуска автомобиля
+          required: false
+          schema:
+            type: number
+            format: int32
+        - name: engine
+          in: query
+          description: Мощность автомобиля
+          required: false
+          schema:
+            type: number
+            format: int32
+        - name: kbm
+          in: query
+          description: Текущий коэффициент КБМ
+          required: false
+          schema:
+            type: number
+            format: float
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/dataFile'
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/predict'
+components:
+  schemas:
+    dataFile:
+      required:
+      - dataFile
+      type: object
+      properties:
+        dataFile:
+          type: string
+          description: Файл с данными о дтп
+          format: binary
+    predict:
+      type: object
+      properties:
+        code:
+          type: string
+        prediction:
+          type: string
+        score:
+          type: string
+        message:
+          type: string
+

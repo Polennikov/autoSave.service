@@ -4,18 +4,9 @@ gunicorn
 connexion[swagger-ui]
 pandas
 numpy
-statsmodels
-scipy
 sklearn
-openpyxl
-pmdarima
-sklearn.linear_model
 sklearn.neighbors
-sklearn.naive_bayes
-sklearn.svm
-sklearn.feature_selection
 sklearn.model_selection
-sklearn.cross_validation
 sklearn.preprocessing
 sklearn.metrics
 

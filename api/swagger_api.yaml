@@ -1,7 +1,7 @@
 ---
 openapi: 3.0.0
 info:
-  description: Сервис для построения модели предсказания роста КБМ
+  description: Сервис для построения модели предсказания риска совершения ДТП
   version: 1.0.0
   title: AutoSaveService
 servers:
@@ -13,7 +13,7 @@ paths:
     post:
       tags:
         - AutoData
-      description: Модель KNN предсказания роста КБМ.
+      description: Модель KNN предсказания риска возниконовения ДТП
       operationId: api.KNN.prediction
       parameters:
         - name: age
@@ -37,12 +37,6 @@ paths:
           schema:
             type: number
             format: int32
-        - name: region
-          in: query
-          description: Регион проживания
-          required: false
-          schema:
-            type: string
         - name: marka
           in: query
           description: Марка автомобиля
@@ -81,6 +75,13 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/predict'
+        '400':
+          description: fail operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/error'
+
 components:
   schemas:
     dataFile:
@@ -100,6 +101,13 @@ components:
         prediction:
           type: string
         score:
+          type: string
+        message:
+          type: string
+    error:
+      type: object
+      properties:
+        code:
           type: string
         message:
           type: string

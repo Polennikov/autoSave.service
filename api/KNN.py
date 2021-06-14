@@ -13,7 +13,7 @@ from flask import request, jsonify
 
 # Функуция перевода уникальных названий
 def UniqMarka(xx):
-    unique_numbers = list(set(xx[:, 4]))
+    unique_numbers = list(set(xx[:, 3]))
 
     uniq = {unique_numbers[0]: 1}
     tmp = 1
@@ -22,25 +22,38 @@ def UniqMarka(xx):
         uniq[x] = tmp
 
     for x in range(0, len(xx)):
-        n = xx[x, 4]
-        xx[x, 4] = uniq[n]
+        n = xx[x, 3]
+        xx[x, 3] = uniq[n]
 
     return xx
 
+# Функуция перевода названия
+def UniqMarkaWord (marka,xx):
+    unique_numbers = list(set(xx[:,3]))
+    tmp=1
+
+    for x in unique_numbers[1:]:
+        tmp=tmp+1
+        if x==marka:
+            return tmp
+
+    return tmp
+
 # Основная функция
-def prediction(dataFile, age=50, gender=1, exp=10, region=48, marka=2, year=2006, engine=140, kbm=0.85):
+def prediction(dataFile, age=50, gender=1, exp=10, marka='Ford', year=2006, engine=140, kbm=0.85):
     try:
         if request.method == 'POST':
             file = request.files['dataFile']
             dataset = pd.read_csv(file, ',')
             xx = dataset.iloc[:, :].values
             # Переводим слова в цифры
+            marka = UniqMarkaWord(marka, xx)
             xx = UniqMarka(xx)
             # Меняем тип столбца
             xx[:, 0] = xx[:, 0].astype('float').astype('int32')
             # Разделяем зависимые и независимые переменные
             X = xx[:, :-1]
-            y = xx[:, 8]
+            y = xx[:, 7]
 
             # Разделяем на обучающую и тестовую выборки
             X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.20)
@@ -58,7 +71,7 @@ def prediction(dataFile, age=50, gender=1, exp=10, region=48, marka=2, year=2006
             # Поиск оптимального числа соседних точек К
             knn2 = KNeighborsClassifier()
             param_grid = {'n_neighbors': np.arange(1, 25)}
-            knn_gscv = GridSearchCV(knn2, param_grid, cv=7)
+            knn_gscv = GridSearchCV(knn2, param_grid, cv=6)
             knn_gscv.fit(X_train, y_train)
             # print(knn_gscv.best_params_)
             # print(knn_gscv.best_score_)
@@ -71,7 +84,7 @@ def prediction(dataFile, age=50, gender=1, exp=10, region=48, marka=2, year=2006
             # Точность модели
             print('acc: ', accuracy_score(y_pred, y_test))
             # Предсказание с полученными из функции данными
-            y_pred = classifier.predict([[ age, gender, exp, region, marka, year, engine, kbm ]])
+            y_pred = classifier.predict([[ age, gender, exp, marka, year, engine, kbm ]])
             # Ответ
             return jsonify({
                 'code': 200,
